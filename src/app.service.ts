@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Dealer, DealerDocument } from './schemas/dealer.schema';
@@ -23,6 +23,52 @@ export class AppService {
 
   async getAllDealers(): Promise<Dealer[]> {
     return this.dealerModel.find().exec();
+  }
+
+  async checkAvailability(shopname: string): Promise<boolean[]> {
+    const dealer = await this.dealerModel.findOne({ shopname }).exec();
+    if (!dealer) {
+      throw new NotFoundException(`Dealer with shopname ${shopname} not found`);
+    }
+
+    const availabilityArray = Array(10).fill(false);
+
+    const employees = await this.employeeModel
+      .find({ id: { $in: dealer.employee_arr_id } })
+      .exec();
+
+    employees.forEach(employee => {
+      employee.car_slot.forEach((slot, index) => {
+        if (slot === '') {
+          availabilityArray[index] = true;
+        }
+      });
+    });
+
+    return availabilityArray;
+  }
+
+  async reserveSlot(shopname: string, time_idx: number): Promise<string> {
+    const dealer = await this.dealerModel.findOne({ shopname }).exec();
+    if (!dealer) {
+      throw new NotFoundException(`Dealer with shopname ${shopname} not found`);
+    }
+
+    const employees = await this.employeeModel
+      .find({ id: { $in: dealer.employee_arr_id } })
+      .exec();
+
+    for (const employee of employees) {
+      if (employee.car_slot[time_idx] === '') {
+        // temporary hard-code (state will be delivered via frontend state)
+        employee.car_slot[time_idx] = 'TUCSON';
+
+        await employee.save();
+        return `Slot reserved successfully at time ${time_idx} for shop ${shopname}`;
+      }
+    }
+
+    throw new ConflictException('No available slots left. Someone else have reserved the slot.');
   }
 
   async resetDatabase(): Promise<void> {
