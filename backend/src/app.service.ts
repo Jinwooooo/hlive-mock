@@ -60,7 +60,7 @@ export class AppService {
 
     for (const employee of employees) {
       if (employee.car_slot[time_idx] === '') {
-        // temporary hard-code (state will be delivered via frontend state)
+        // temporary standin hard-code (state will be delivered via frontend state)
         employee.car_slot[time_idx] = 'TUCSON';
 
         await employee.save();
