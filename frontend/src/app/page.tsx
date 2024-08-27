@@ -1,16 +1,17 @@
-import './custom.css';
 import HeaderLiveConsultation from './components/HeaderLiveConsultation';
 import HeaderHlive from './components/HeaderHlive';
+import Footer from './components/Footer';
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
-        {/* <HeaderLiveConsultation /> */}
-        <HeaderHlive />
+        <HeaderLiveConsultation />
+        {/* <HeaderHlive /> */}
         <main className="flex-grow p-8">
             <h2 className="text-3xl font-bold mb-4">Lorem Ipsum</h2>
             <p>WIP</p>
         </main>
+        <Footer />
     </div>
 
     // <main className="flex min-h-screen flex-col items-center justify-between p-24">

@@ -19,7 +19,6 @@ const HeaderHlive = () => {
             </h3>
         </div>
       </div>
-
     </div>
   );
 };
