@@ -11,7 +11,7 @@ const Footer = () => {
                 <hr className="w-9/12 h-px bg-gray-200 border-0 dark:bg-gray-400"></hr>
             </div>
             <div className="px-14">
-                <p className="text-gray-500 dark:text-gray-400">The information on this site relating to Hyundai Motor Company and its products is provided for information only without any express or implied warranty of any kind. The information published may contain direct or indirect references even to products not available in your country. For details about the products available in your country, contact the nearest dealer directly.</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">The information on this site relating to Hyundai Motor Company and its products is provided for information only without any express or implied warranty of any kind. The information published may contain direct or indirect references even to products not available in your country. For details about the products available in your country, contact the nearest dealer directly.</p>
             </div>
         </div>
         <div className="relative w-full h-1/2 bg-stone-800 flex">

@@ -4,7 +4,7 @@ const HeaderHlive = () => {
   return (
     <div className="relative w-full h-64">
       <img
-        src="/images/header_temp.jpg"
+        src="/images/header_standin.jpg"
         alt="Header"
         className="absolute inset-0 w-full h-full object-cover"
       />
