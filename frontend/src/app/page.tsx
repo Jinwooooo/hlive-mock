@@ -4,6 +4,7 @@ import HeaderLiveConsultation from './components/HeaderLiveConsultation';
 import HeaderHlive from './components/HeaderHlive';
 import Footer from './components/Footer';
 import Model from './pages/model';
+import Dealership from './pages/dealership';
 
 export default function Home() {
   return (
@@ -11,7 +12,8 @@ export default function Home() {
         <HeaderHlive />
         {/* <HeaderHlive /> */}
         <main className="flex-grow p-8">
-            <Model />
+            {/* <Model /> */}
+            <Dealership />
         </main>
         <Footer />
     </div>
