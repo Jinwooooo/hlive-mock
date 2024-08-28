@@ -1,60 +1,9 @@
-// "use client"
-
-// import React, { useEffect } from "react";
-// import { Loader } from '@googlemaps/js-api-loader';
-// import { useRecoilState } from 'recoil';
-
-// export default function Dealership() {
-
-// 	const mapRef = React.useRef<HTMLDivElement>(null);
-
-// 	useEffect(() => {
-// 		const initMap = async() => {
-// 			const loader = new Loader({
-// 				apiKey: process.env.NEXT_PUBLIC_GMAP_API as string,
-// 				version: 'weekly'
-// 			});
-
-// 			const { Map } = await loader.importLibrary('maps');
-// 			const { AdvancedMarkerElement } = await loader.importLibrary('marker');
-
-// 			const position = {
-// 				lat: 41.902782,
-// 				lng: 12.496366
-// 			}
-
-// 			const mapOptions: google.maps.MapOptions = {
-// 				center: position,
-// 				zoom: 10,
-// 				mapId: 'MY_NEXTJS_MAPID'
-// 			}
-
-// 			const map = new Map(mapRef.current as HTMLDivElement, mapOptions);
-// 			const marker = new AdvancedMarkerElement({
-// 				map: map,
-// 				position: position,
-// 				title: "Dealership Location",
-// 			});
-// 		}
-
-// 		initMap();
-// 	}, []);
-
-//   return (
-//     <div className="w-full min-h-screen h-screen">
-// 			<div className="relative w-full h-[10%]">
-// 				<p className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-5xl p-8">Select a dealership</p>
-// 			</div>
-// 			<div className="relative w-full h-[80%]" ref={mapRef}>
-// 			</div>
-//     </div>
-//   );  
-// }
-
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { Loader } from '@googlemaps/js-api-loader';
+import { useRecoilState } from 'recoil';
+import { currentStageAtom } from '../atoms/progress';
 
 interface MarkerInfo {
 	lat: number;
@@ -64,12 +13,17 @@ interface MarkerInfo {
 }
 
 export default function Dealership() {
+	const [currentStage, setCurrentStage] = useRecoilState(currentStageAtom);
+
+	useEffect(() => {
+		setCurrentStage(2);
+	}, [setCurrentStage]);
+
 	const mapRef = React.useRef<HTMLDivElement>(null);
 	const [showPopup, setShowPopup] = useState(false);
 	const [popupPosition, setPopupPosition] = useState({ lat: 0, lng: 0 });
 	const [info, setInfo] = useState({ title: "", description: "" });
 
-	// Sample data for multiple markers
 	const markersData: MarkerInfo[] = [
 		{
 			lat: 41.902782,
