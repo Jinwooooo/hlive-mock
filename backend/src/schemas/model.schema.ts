@@ -6,16 +6,16 @@ export type ModelDocument = Model & Document;
 @Schema()
 export class Model {
   @Prop({ required: true })
-  id: string;
+  modelId: string;
 
   @Prop({ required: true })
-  type: string;
+  modelDescription: string;
 
   @Prop({ required: true })
-  model: string;
+  image: string;
 
   @Prop({ required: true })
-  imageUrl: string;
+  carType1Desc: string;
 }
 
 export const ModelSchema = SchemaFactory.createForClass(Model);

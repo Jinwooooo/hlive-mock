@@ -4,20 +4,9 @@ import { Document, SchemaTypeOptions } from 'mongoose';
 export type DealershipDocument = Dealership & Document;
 
 @Schema()
-export class BusinessHours {
-  @Prop({ required: true })
-  open: string;
-
-  @Prop({ required: true })
-  close: string;
-}
-
-export const BusinessHoursSchema = SchemaFactory.createForClass(BusinessHours);
-
-@Schema()
 export class Position {
-	@Prop({ type: [String], required: true, default: Array(2).fill('') })
-	coordinates: string[];
+	@Prop({ type: [Number], required: true, default: Array(2).fill(0) })
+	coordinates: number[];
 
 	@Prop({ required: true })
 	type: string;
@@ -27,44 +16,26 @@ export const PositionSchema = SchemaFactory.createForClass(Position);
 
 @Schema()
 export class Dealership extends Document {
-  @Prop({ type: BusinessHoursSchema })
-  businessHours: BusinessHours;
-
   @Prop({ required: true })
-  address: string;
-
-  @Prop({ required: true })
-  city: string;
-
-  @Prop({ required: true })
-  countryCode: string;
+  name: string;
 
   @Prop({ required: true })
   dealershipCode: string;
 
   @Prop({ required: true })
+  address: string;
+
+  @Prop({ required: false })
   email: string;
 
-  @Prop({ required: true })
-  name: string;
+  @Prop({ required: false })
+  telephone: string;
+
+  @Prop({ required: false })
+  website: string;
 
   @Prop({ type: PositionSchema })
   position: Position;
-
-  @Prop({ required: true })
-  postalCode: string;
-
-  @Prop({ required: true })
-  regionName: string;
-
-  @Prop({ required: true })
-  street: string;
-
-  @Prop({ required: true })
-  telephone: string;
-
-  @Prop({ required: true })
-  webUrl: string;
 }
 
 export const DealershipSchema = SchemaFactory.createForClass(Dealership);
