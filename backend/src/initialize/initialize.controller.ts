@@ -1,14 +1,14 @@
 import { Controller, Post, HttpStatus, HttpException } from '@nestjs/common';
-import { InitDbService } from './init-db.service';
+import { InitializeService} from './initialize.service';
 
-@Controller()
-export class InitDbController {
-  constructor(private readonly initDbService: InitDbService) {}
+@Controller('initialize')
+export class InitializeController {
+  constructor(private readonly initializeService: InitializeService) {}
 
-  @Post('init_db')
+  @Post('db')
   async initDb() {
     try {
-      await this.initDbService.initDb();
+      await this.initializeService.initDb();
       return {
         status: HttpStatus.OK,
         message: 'Database initialization complete',
