@@ -4,104 +4,114 @@ import React, { useEffect, useState } from "react";
 import { Loader } from '@googlemaps/js-api-loader';
 import { useRecoilState } from 'recoil';
 import { currentStageAtom } from '../atoms/progress';
+import axios from 'axios';
 
-interface MarkerInfo {
-	lat: number;
-	lng: number;
-	title: string;
-	description: string;
+interface Dealership {
+  name: string;
+  dealershipCode: string;
+  address: string;
+  email: string;
+  telephone: string;
+  website: string;
+  position: {
+    coordinates: [number, number];
+    type: string;
+  };
 }
 
 export default function Dealership() {
-	const [currentStage, setCurrentStage] = useRecoilState(currentStageAtom);
+  const [currentStage, setCurrentStage] = useRecoilState(currentStageAtom);
+  const [dealerships, setDealerships] = useState<Dealership[]>([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupPosition, setPopupPosition] = useState({ lat: 0, lng: 0 });
+  const [info, setInfo] = useState({ title: "", description: "" });
 
-	useEffect(() => {
-		setCurrentStage(2);
-	}, [setCurrentStage]);
+  useEffect(() => {
+    setCurrentStage(2);
+  }, [setCurrentStage]);
 
-	const mapRef = React.useRef<HTMLDivElement>(null);
-	const [showPopup, setShowPopup] = useState(false);
-	const [popupPosition, setPopupPosition] = useState({ lat: 0, lng: 0 });
-	const [info, setInfo] = useState({ title: "", description: "" });
+  useEffect(() => {
+	const backendUrl = process.env.NEXT_PUBLIC_API_SERVER_URL;
+    axios.get(`${backendUrl}/core/models`)
 
-	const markersData: MarkerInfo[] = [
-		{
-			lat: 41.902782,
-			lng: 12.496366,
-			title: "Dealership 1",
-			description: "Detailed information about Dealership 1.",
-		},
-		{
-			lat: 41.890251,
-			lng: 12.492373,
-			title: "Dealership 2",
-			description: "Detailed information about Dealership 2.",
-		},
-		{
-			lat: 41.911745,
-			lng: 12.476735,
-			title: "Dealership 3",
-			description: "Detailed information about Dealership 3.",
-		},
-	];
+    const fetchDealerships = async () => {
+      try {
+        const response = await axios.get(`${backendUrl}/core/dealerships`);
+        setDealerships(response.data);
+      } catch (error) {
+        console.error('Error fetching dealerships:', error);
+      }
+    };
 
-	useEffect(() => {
-		const initMap = async () => {
-			const loader = new Loader({
-				apiKey: process.env.NEXT_PUBLIC_GMAP_API as string,
-				version: 'weekly',
-			});
+    fetchDealerships();
+  }, []);
 
-			const { Map } = await loader.importLibrary('maps');
-			const { AdvancedMarkerElement } = await loader.importLibrary('marker');
+  const mapRef = React.useRef<HTMLDivElement>(null);
 
-			const mapOptions: google.maps.MapOptions = {
-				center: { lat: 41.902782, lng: 12.496366 },
-				zoom: 10,
-				mapId: 'MY_NEXTJS_MAPID',
-			};
+  useEffect(() => {
+	const initMap = async () => {
+      const loader = new Loader({
+        apiKey: process.env.NEXT_PUBLIC_GMAP_API as string,
+        version: 'weekly',
+      });
 
-			const map = new Map(mapRef.current as HTMLDivElement, mapOptions);
+      const { Map } = await loader.importLibrary('maps');
+      const { AdvancedMarkerElement } = await loader.importLibrary('marker');
 
-			markersData.forEach((markerData) => {
-				const marker = new AdvancedMarkerElement({
-					map: map,
-					position: { lat: markerData.lat, lng: markerData.lng },
-					title: markerData.title,
-				});
+      const mapOptions: google.maps.MapOptions = {
+        center: { lat: 41.902782, lng: 12.496366 },
+        zoom: 10,
+        mapId: 'HLive_Mock',
+      };
 
-				marker.addListener("click", () => {
-					setShowPopup(true);
-					setPopupPosition({ lat: markerData.lat, lng: markerData.lng });
-					setInfo({ title: markerData.title, description: markerData.description });
-				});
-			});
-		};
+      const map = new Map(mapRef.current as HTMLDivElement, mapOptions);
 
-		initMap();
-	}, []);
+      dealerships.forEach((dealership) => {
+        const [lng, lat] = dealership.position.coordinates;
 
-	return (
-		<div className="w-full min-h-screen h-screen relative">
-			<div className="relative w-full h-[10%]">
-				<p className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-5xl p-8">
-					Select a dealership
-				</p>
-			</div>
-			<div className="relative w-full h-[80%]" ref={mapRef}></div>
-			
-			{showPopup && (
-				<div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-96 p-4 bg-white shadow-lg rounded-lg z-50">
-					<h2 className="text-xl text-black font-bold">{info.title}</h2>
-					<p className="text-black">{info.description}</p>
-					<button
-						className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
-						onClick={() => setShowPopup(false)}
-					>
-						Close
-					</button>
-				</div>
-			)}
-		</div>
-	);
+        const marker = new AdvancedMarkerElement({
+          map: map,
+          position: { lat, lng },
+          title: dealership.name,
+        });
+
+        marker.addListener("click", () => {
+          setShowPopup(true);
+          setPopupPosition({ lat, lng });
+          setInfo({
+            title: dealership.name,
+            description: dealership.address,
+          });
+        });
+      });
+    };
+
+    if (dealerships.length > 0) {
+      initMap();
+    }
+  }, [dealerships]);
+
+  return (
+    <div className="w-full min-h-screen h-screen relative">
+      <div className="relative w-full h-[10%]">
+        <p className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-5xl p-8">
+          Select a dealership
+        </p>
+      </div>
+      <div className="relative w-full h-[80%]" ref={mapRef}></div>
+      
+      {showPopup && (
+        <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 w-96 p-4 bg-white shadow-lg rounded-lg z-50">
+          <h2 className="text-xl text-black font-bold">{info.title}</h2>
+          <p className="text-black">{info.description}</p>
+          <button
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+            onClick={() => setShowPopup(false)}
+          >
+            Close
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }

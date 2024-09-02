@@ -8,7 +8,6 @@ import HeaderHlive from './components/HeaderHlive';
 import Footer from './components/Footer';
 import FourStageProgressBar from './components/4StageProgressBar';
 
-
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
@@ -22,7 +21,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.className} flex flex-col min-h-screen`}>
         <RecoilRoot>
           <HeaderHlive />
           {showProgressBar && <FourStageProgressBar />}
